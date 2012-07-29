@@ -81,11 +81,13 @@
     if (sender.numberOfTouches == 1 && currentActionItem == CVActionItemBeautify) {
         CGPoint point = [sender locationOfTouch:0 inView:imageView];
         IplImage *src_img = [self CreateIplImageFromUIImage:imageView.image];
-		IplImage *mask_img = cvCreateImage(cvGetSize(src_img), IPL_DEPTH_8U, 1);
+        CvSize img_size = cvGetSize(src_img);
+		IplImage *mask_img = cvCreateImage(img_size, IPL_DEPTH_8U, 1);
         IplImage *dst_img = cvCloneImage (src_img);
-        
+        NSLog(@"%f, %f", imageView.frame.size.width, imageView.frame.size.height);
         cvZero(mask_img);
-        cvCircle( mask_img, cvPoint(point.x*2,point.y*2-50), 
+        CGFloat ratio = img_size.width / imageView.frame.size.width;
+        cvCircle( mask_img, cvPoint(point.x*ratio, point.y*ratio),
                  10, CV_RGB(255,255,255), -1, 8, 0 );
         
         cvInpaint (src_img, mask_img, dst_img, 10.0, CV_INPAINT_NS);
